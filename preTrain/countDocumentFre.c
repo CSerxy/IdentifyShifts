@@ -51,6 +51,10 @@ int main(int argc, char** argv){
 	if ((i = ArgPos((char*)"-o", argc, argv)) > 0)
 		strcpy(output_dir, argv[i+1]);
 	
+    if (input_dir[strlen(input_dir) - 1] != '/')
+        strcat(input_dir, "/");
+    if (output_dir[strlen(output_dir) - 1] != '/')
+        strcat(output_dir, "/");
 	DIR *dirp;
 	struct dirent *direntp;
 	if ((dirp = opendir(input_dir)) == NULL) {
@@ -188,10 +192,7 @@ void Input(){
 
 			}
 			num_vertices2 = 0;
-//			printf("4\n");
-//			fflush(stdout);
 		}
-//		fgets(temp, 1000, fin);
 	}
 }
 
