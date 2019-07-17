@@ -1,8 +1,18 @@
-	1. The first thing is get the useful information we need from the original dataset.
+	The first thing is get the useful information we need from the original dataset.
+    
+    As described in our paper, we experiment on the below four data set:
+
+        ACM Abstract: from https://aminer.org/citation, we use ACM-V8 in our experiment;
+        DBLP Abstract: from https://aminer.org/citation, we use DBLP-V10 in our experiment;
+        ACMDL: consists of full text papers of ACM publications;
+        The Google Books Ngram Dataset: from http://storage.googleapis.com/books/ngrams/books/datasetsv2.html
+
+    In this demo, we take DBLP Abstract as example.
 
 	The form of the dataset is illustrated at https://aminer.org/citation
 
-	Here we just get the abstracts of papers from ../dblp-ref , and put them into ../input_org/*
+	
+    1. Here we just get the abstracts of papers from ./dblp-ref , and put them into ./input/
 
 	And we add "<start>" before each abstract and add "<end>" at the end of the each abstract which marks the begin and the end of each abstract.
 
@@ -10,79 +20,61 @@
 
 	You can run it by:
 
-	python dealWith_org_dataset.py -i ../dblp-ref -o ../input_year_org
+	python ./preTrain/dealWith_org_dataset.py -i ./dblp-ref -o ./input/
 
-	2. Open ../codes/firstdeal.c
+	2. Then, we use ./preTrain/countDocumentFre.c to count words' document frequency in ../input/
 
-	firstdeal.c counts words' document frequency in ../input
-
-	The results are put into ../document_frequency
+	The results are put into ../document_frequency/
 
 	You can compile it through:
-		gcc-4.6 firstdeal.c -o  firstdeal.o -std=c99
+		gcc-4.6 ./preTrain/countDocumentFre.c -o ./preTrain/countDocumentFre -std=c99
 
 	Run it by:
-		 ./firstdeal.o -i ../input_year_org/ -o ../document_fre_org
+		 ./preTrain/countDocumentFre -i ./input/ -o ./document_frequency/
 
 #   The words are in after stemming form.
 
-	3. Open ../codes/accmulate_fre.py
-	
-	accmulate_fre.py counts the accmulate frequency
+	3. Next, we apply ./preTrain/accmulateFre.py to accmulate document frequency.
 
-	The results are put into ../accmulate_document_fre
+	The results are put into ./accmulate_document_fre/
 
 	Run it by:
-		python accumulate_fre.py -i ../document_fre_org -o ../accmulate_document_fre_org
+		python accumulate_fre.py -i ./document_frequency/ -o ./accmulate_document_fre/
 
-	4. Enter ../codes, open file acmdl_second_frequency.c
+	4. Now, we hope to filter the infrequent words to get the valid word list and avoid noises.
 
-        acmdl_second_frequency.c counts words' frequency in ../input and filters the results by the same conditions with word2vec(the words' length should between 2 and 15, and each words should appears more than 10 in a year).
+    ./preTrain/getWordList.c counts words' frequency in ./input/ and filters the results by the same conditions with word2vec(the words' length should between 2 and 15, and each words should appears more than 10 in a year).
 
-        The results are put into ../frequency
+        The results are put into ./valid/
 
         You can compile it through:
-                gcc-4.6 acmdl_second_frequency.c -o acmdl_second_frequency.o -std=c99
+            gcc-4.6 ./preTrain/getWordList.c -o ./preTrain/getWordList -std=c99
 
         And run it by:
-                ./acmdl_second_frequency.o -i input -o frequency
+            ./preTrain/getWordList -i ./input/ -o ./valid/
 	
-	It will print out the total number of words that statisfying the filtering conditions. In ACM, it totally appears 212713166 words.
+	It will print out the total number of words that statisfying the filtering conditions. 
 
-	6. Open ../codes/acmdl2graph.c
+	5. Now, we hope to count every two words' weight and print it out. For example, the weight between 'apple' and 'banana' is 100, there are two lines in output file 'apple banana 100.00000' and 'banana apple 100.0000'. (This follows LINE's training instructions)
 
-	acmdl2graph.c counts every two words' weight and print it out.
-
-	 For example, the weight between 'apple' and 'banana' is 100, there are two lines in output file 'apple banana 100.00000' and 'banana apple 100.0000'. (Attension: this place may has bugs)
-
-	You can compile it through:
-		gcc-4.6 acmdl2graph.c -o acmdl2graph.o -std=c99
+	You can compile raw2graph.c through:
+		gcc-4.6 ./preTrain/raw2graph.c -o ./preTrain/acmdl2graph -std=c99
 
 	And run it by:
-		./acmdl2graph.o -i ../input_year_org/ -v ../fre_org/ -o ../graph_org/
+		./preTrain/acmdl2graph -i ./input/ -v ./fre/ -o ./graph/
 
-	7. Open ../codes/acmdl2sentence.c
+    It stores words' freqency in ./fre/, the graph in ./graph/
 
-	acmdl2sentence.c transfroms the original dataset into each sentence after omitting some words that not satisfies our requirement.	
+	6. Then, we use ./preTrain/raw2sentence.c to transfrom the original dataset into each sentence after omitting infrequent words.	
 	
 	You can compile it through:
-		gcc-4.6 acmdl2sentence.c -o acmdl2sentence.o -std=c99
+		gcc-4.6 ./preTrain/raw2sentence.c -o ./preTrain/raw2sentence -std=c99
 
 	And run it by:
-		./acmdl2sentence.o -i input -o sentences -v frequency
+		./preTrain/raw2sentence -i ./input -o ./sentences -v ./valid
 
-	8. Open ../codes/test_dataset.py
+----
 
-	test_dataset.py tests our dataset using PMI matrix. It circulates out each periods' PMI matrix, and minus the two periods' matrix to see whether this dataset is good enough for us to use.
-
-	Before you run it, you should enter  ../../testdataset to active virtual environment for python.
-
-	So firstly:
-		source ../../testdataset/bin/activate
-
-	Then:
-		python test_dataset.py -i sentences -o test_dataset -r test_dataset_result -y 5 -w 5
-	
 	9. Open ../codes/line.cpp
 
 	This is what we want to train.
@@ -104,6 +96,8 @@
 
 	And run it:
 		./concatenate.o -input1 first_org -input2 second_org -output concatenated_org -binary 0
+
+----
 
 	11. (a) Open ../codes/get_result.cpp
 

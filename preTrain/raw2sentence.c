@@ -58,15 +58,15 @@ int main(int argc, char** argv){
 
 	while ((direntp = readdir(dirp)) != NULL) {
 		if (strcmp(direntp->d_name, ".") != 0 && strcmp(direntp->d_name, "..") != 0) {
-printf("%s\t", direntp->d_name);
-fflush(stdout);
+            printf("%s\t", direntp->d_name);
+            fflush(stdout);
 			strcpy(input_file, input_dir);
 			strcat(input_file, direntp->d_name);
 			strcpy(output_file, output_dir);
 			strcat(output_file, direntp->d_name);
 			strcat(output_file, ".ngrams");
 			strcpy(vocabulary_file, vocabulary_dir);
-                        strcat(vocabulary_file, direntp->d_name);
+            strcat(vocabulary_file, direntp->d_name);
 
 			fin = fopen(input_file, "r");
 			fout = fopen(output_file, "w");
