@@ -74,28 +74,31 @@
 		./preTrain/raw2sentence -i ./input -o ./sentences -v ./valid
 
 ----
+    Now we come to the training embedding section, we present two version of LINE: 
 
-	9. Open ../codes/line.cpp
+        * line_org.cpp uses randomized initialization
+        * line_init.cpp uses last period's embedding as initialization
 
-	This is what we want to train.
-	
-	It trains all the file in folder graph, and puts the results into ../embeddings/second_org/
+    To avoid redundant description, we just show how to compile line_init.cpp here and refer readers to grab more details from LINE's original document: https://github.com/tangjianpku/LINE
+
+	1. ./trainEmbedding/line_init.cpp trains all files in ./graph, and puts the results into ./embeddings/first_init/ and ./embeddings/second_init/
 
 	You can compile it through:
-		g++-4.6 line.cpp -o line.o -I /storage6/foreseer/users/zhuofeng/.local/include/ -L /storage6/foreseer/users/zhuofeng/.local/lib/ -lgsl -lm -lgslcblas -lpthread
+		g++-4.6 ./trainEmebdding/line_init.cpp -o ./trainEmbedding/line_init -I ~/.local/include/ -L ~/.local/lib/ -lgsl -lm -lgslcblas -lpthread
 
 	And run it:
-		./line.o -binary 0 -size 100 -negative 5 -samples 100 -rho 0.025 -threads 16 -train graph -output first_org -order 1
+		./trainEmbedding/line_init -binary 0 -size 100 -negative 5 -samples 100 -rho 0.025 -threads 16 -train ./graph/ -output ./embeddings/first_init/ -order 1
+        ./trainEmbedding/line_init -binary 0 -size 100 -negative 5 -samples 100 -rho 0.025 -threads 16 -train ./graph/ -output ./embeddings/second_init/ -order 2
 
-	10. Open ../codes/concatenated.cpp
+	2. Open ./trainEmbedding/concatenated.cpp
 
 	Concatenate the first-order priority and second-order priority embeddings, and do normalization.
 
 	You can compile it through:
-		g++-4.6 concatenate.cpp -o concatenate.o
+		g++-4.6 ./trainEmbedding/concatenate.cpp -o ./trainEmbedding/concatenate
 
 	And run it:
-		./concatenate.o -input1 first_org -input2 second_org -output concatenated_org -binary 0
+		./trainEmbedding/concatenate.o -input1 first_init -input2 second_init -output concatenated_init -binary 0
 
 ----
 
@@ -113,7 +116,7 @@
     
     11. (b) Open ../codes/filtering.py
 
-    filtering.py filters out the words that appreas more threshold times in history, and appears more than threshold1 times before the previous year and appears more than threshold2 times in the interval years. Also, in order to filte out the new words that immediately appeared in some time, we use mu to control the new words. Any words' appearing time between the interval years multiply mu should be smaller than the appearing time before the previous year.
+    filtering.py filters out the words that appreas more threshold times in history, and appears more than threshold1 times before the previous year and appears more than threshold2 times in the interval years. Also, in order to move the new words that immediately appeared in some time, we use mu to control the new words. Any words' appearing time between the interval years multiply mu should be smaller than the appearing time before the previous year.
 
     Run it:
         python filtering.py -hi ../accmulate_document_fre/2016 -th 250 -fr ../accmulate_document_fre/ -th1 100 -th2 50 -o ../filtering_250_100_50/

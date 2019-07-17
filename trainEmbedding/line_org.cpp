@@ -92,7 +92,7 @@ int main(int argc, char** argv){
 		printf("\t-rho <float>\n");
 		printf("\t\tSet the starting learning rate; default is 0.025\n");
 		printf("\nExamples:\n");
-		printf("./lineorg.o -binary 0 -size 100 -order 2 -negative 5 -samples 100 -rho 0.025 -threads 16\n\n");
+		printf("./trainEmbedding/line_org -binary 0 -size 100 -negative 5 -samples 100 -rho 0.025 -threads 16 -train ./graph/ -output ./embeddings/first_org/ -order 1\n\n");
 		return 0;
 	}
 	if ((i = ArgPos((char *)"-train", argc, argv)) > 0) strcpy(network_dir, argv[i + 1]);
@@ -105,16 +105,10 @@ int main(int argc, char** argv){
 	if ((i = ArgPos((char *)"-rho", argc, argv)) > 0) init_rho = atof(argv[i + 1]);
 	if ((i = ArgPos((char *)"-threads", argc, argv)) > 0) num_threads = atoi(argv[i + 1]);
 
-    char strtemp[MAX_STRING];
-    strcpy(strtemp, "../");
-    strcat(strtemp, network_dir);
-    strcat(strtemp, "/");
-    strcpy(network_dir, strtemp);
-
-    strcpy(strtemp, "../embeddings/");
-    strcat(strtemp, embedding_dir);
-    strcat(strtemp, "/");
-    strcpy(embedding_dir, strtemp);
+    if (network_dir[strlen(network_dir) - 1] != "/")
+        strcat(network_dir, "/");
+    if (embedding_dir[strlen(embedding_dir) - 1] != "/")
+        strcat(embedding_dir, "/");
 
 	total_samples *= 1000000;
 	rho = init_rho;

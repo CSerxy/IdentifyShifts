@@ -206,9 +206,6 @@ int main(int argc, char **argv) {
 	if ((i = ArgPos((char *)"-output", argc, argv)) > 0) strcpy(output_directory, argv[i + 1]);
 	if ((i = ArgPos((char *)"-binary", argc, argv)) > 0) binary = atoi(argv[i + 1]);
 	
-	strcpy(current_dir, "../embeddings/");
-	strcat(current_dir, directory_1);
-
 	DIR *pdir;
 	struct dirent *pent;
 	pdir = opendir(current_dir);
@@ -216,24 +213,24 @@ int main(int argc, char **argv) {
 		printf("Opendir %s failure!\n", directory_1);
 		exit(1);
 	}
+    if (directory_1[strlen(directory_1) - 1] != "/")
+        strcat(directory_1, "/");
+    if (directory_2[strlen(directory_2) - 1] != "/")
+        strcat(directory_2, "/");
+    if (output_directory[strlen(output_directory) - 1] != "/")
+        strcat(output_directory, "/");
 
 	while ((pent = readdir(pdir)) != NULL) {
 		if (strcmp(pent->d_name, ".") != 0 && strcmp(pent->d_name, "..") != 0 && strcmp(pent->d_name, "README.md") != 0) {
-			strcpy(vector_file1, "../embeddings/");
-			strcat(vector_file1, directory_1);
-			strcat(vector_file1, "/");
+			strcpy(vector_file1, directory_1);
 			strcat(vector_file1, pent->d_name);
-printf("%s\n", vector_file1);
-			strcpy(vector_file2, "../embeddings/");
-			strcat(vector_file2, directory_2);
-			strcat(vector_file2, "/");
+
+			strcpy(vector_file2, directory_2);
 			strcat(vector_file2, pent->d_name);
-printf("%s\n", vector_file2);
-			strcpy(output_file, "../embeddings/");
-			strcat(output_file, output_directory);
-			strcat(output_file, "/");
+
+			strcpy(output_file, output_directory);
 			strcat(output_file, pent->d_name);
-printf("%s\n", output_file);
+
 			TrainModel();
 			
 			free(vertex_hash_table);
