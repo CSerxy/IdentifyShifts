@@ -1,5 +1,5 @@
-# IdentifyShifts
-The official implementation of the SIGIR'18 paper "Identify Shifts of Word Semantics through Bayesian Surprise"
+# Identify Shifts of Word Semantics through Bayesian Surprise
+This is the official implementation of the SIGIR'18 paper "Identify Shifts of Word Semantics through Bayesian Surprise"
 
 ----
 	The first thing is get the useful information we need from the original dataset.
@@ -188,5 +188,14 @@ getResult
         python ./getResult/evalution.py -i knn+bayesian_1_250_100_50.txt -s ./word_lists_200/confusing_words_list1.txt -o result_knn+bayesian.txt
 
 
-
+Citation
+----
+@inproceedings{wu2018identify,
+  title={Identify Shifts of Word Semantics through Bayesian Surprise},
+  author={Wu, Zhuofeng and Li, Cheng and Zhao, Zhe and Wu, Fei and Mei, Qiaozhu},
+  booktitle={The 41st International ACM SIGIR Conference on Research \& Development in Information Retrieval},
+  pages={825--834},
+  year={2018},
+  organization={ACM}
+}
 
