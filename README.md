@@ -190,12 +190,12 @@ getResult
 
 Citation
 ----
-@inproceedings{wu2018identify,
-  title={Identify Shifts of Word Semantics through Bayesian Surprise},
-  author={Wu, Zhuofeng and Li, Cheng and Zhao, Zhe and Wu, Fei and Mei, Qiaozhu},
-  booktitle={The 41st International ACM SIGIR Conference on Research \& Development in Information Retrieval},
-  pages={825--834},
-  year={2018},
-  organization={ACM}
-}
+    @inproceedings{wu2018identify,
+      title={Identify Shifts of Word Semantics through Bayesian Surprise},
+      author={Wu, Zhuofeng and Li, Cheng and Zhao, Zhe and Wu, Fei and Mei, Qiaozhu},
+      booktitle={The 41st International ACM SIGIR Conference on Research \& Development in Information Retrieval},
+      pages={825--834},
+      year={2018},
+      organization={ACM}
+    }
 
