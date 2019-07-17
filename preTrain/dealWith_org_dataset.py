@@ -8,17 +8,12 @@ def main(args):
     input_file = args.input_file
     output_dir = args.output_dir
     count = 0
-#    count2 = 0
     if not path.exists(output_dir):
         os.mkdir(output_dir)
 
     with open(input_file, "rb") as f:
         lines = f.readlines()
         for line in lines:
-#            count2 += 1
-#            if count2 % 10000 == 0:
-#                print count2
-            
             if line != "\n" and line.startswith("{\"abstract\": \""):
                 count += 1
                 temp = line.split("{\"abstract\": \"")[1]
