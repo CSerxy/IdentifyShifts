@@ -18,7 +18,7 @@ The official implementation of the SIGIR'18 paper "Identify Shifts of Word Seman
 
 	The form of the dataset is illustrated at https://aminer.org/citation
 
-#preTrain
+preTrain
 ----
     1. Here we just get the abstracts of papers from ./dblp-ref , and put them into ./input/
 
@@ -81,7 +81,7 @@ The official implementation of the SIGIR'18 paper "Identify Shifts of Word Seman
 	And run it by:
 		./preTrain/raw2sentence -i ./input -o ./sentences -v ./valid
 
-#trainEmbedding
+trainEmbedding
 ----
     Now we come to the training embedding section, we present two version of LINE: 
 
@@ -151,7 +151,7 @@ The official implementation of the SIGIR'18 paper "Identify Shifts of Word Seman
 
     Attention: The nestest node in ANN results has the largest value.
 
-#getResult
+getResult
 ----
     In this section, we're going to get the final results for competitive algorithms and our proposed models.
 
