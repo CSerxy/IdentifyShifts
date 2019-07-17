@@ -2,16 +2,20 @@
     
     As described in our paper, we experiment on the below four data set:
 
-        ACM Abstract: from https://aminer.org/citation, we use ACM-V8 in our experiment;
-        DBLP Abstract: from https://aminer.org/citation, we use DBLP-V10 in our experiment;
-        ACMDL: consists of full text papers of ACM publications;
-        The Google Books Ngram Dataset: from http://storage.googleapis.com/books/ngrams/books/datasetsv2.html
+        * ACM Abstract: from https://aminer.org/citation, we use ACM-V8 in our experiment;
+
+        * DBLP Abstract: from https://aminer.org/citation, we use DBLP-V10 in our experiment;
+
+        * ACMDL: consists of full text papers of ACM publications;
+        
+        * Google Books Ngram Dataset: from http://storage.googleapis.com/books/ngrams/books/datasetsv2.html
 
     In this demo, we take DBLP Abstract as example.
 
 	The form of the dataset is illustrated at https://aminer.org/citation
 
-	
+#preTrain
+----
     1. Here we just get the abstracts of papers from ./dblp-ref , and put them into ./input/
 
 	And we add "<start>" before each abstract and add "<end>" at the end of the each abstract which marks the begin and the end of each abstract.
@@ -32,7 +36,7 @@
 	Run it by:
 		 ./preTrain/countDocumentFre -i ./input/ -o ./document_frequency/
 
-#   The words are in after stemming form.
+    The words are in after stemming form.
 
 	3. Next, we apply ./preTrain/accmulateFre.py to accmulate document frequency.
 
@@ -73,6 +77,7 @@
 	And run it by:
 		./preTrain/raw2sentence -i ./input -o ./sentences -v ./valid
 
+#trainEmbedding
 ----
     Now we come to the training embedding section, we present two version of LINE: 
 
@@ -100,33 +105,7 @@
 	And run it:
 		./trainEmbedding/concatenate.o -input1 first_init -input2 second_init -output concatenated_init -binary 0
 
-----
-
-	11. (a) Open ../codes/get_result.cpp
-
-#   Here we get the LINE+Init result
-
-	get_result.cpp uses many filtering conditions such as document frequency, WordNet, total frequency and so on to get what we want.
-
-	You can compile it through:
-		g++-4.6 get_result.cpp -o get_result.o
-
-	And run it by:
-		./get_result.o -input concatenated_org -dictionary frequency -period 5 -total frequency.txt -threshold 250 -frequency accmulate_document_fre -threshold1 100 -threshold2 25 -mu 2 -output result_250_100_25 
-    
-    11. (b) Open ../codes/filtering.py
-
-    filtering.py filters out the words that appreas more threshold times in history, and appears more than threshold1 times before the previous year and appears more than threshold2 times in the interval years. Also, in order to move the new words that immediately appeared in some time, we use mu to control the new words. Any words' appearing time between the interval years multiply mu should be smaller than the appearing time before the previous year.
-
-    Run it:
-        python filtering.py -hi ../accmulate_document_fre/2016 -th 250 -fr ../accmulate_document_fre/ -th1 100 -th2 50 -o ../filtering_250_100_50/
-
-    Where   -hi represents the historical document frequency;
-            -th represents the threshold; -fr represents the accumulated document frequency's diretory;
-            -th1 represents threshold1; -th2 represents threshold2; -mu represents mu;
-            -o represents output directory.
-
-    12. Open ../codes/simplify.py
+    3. To decrease the number of words when calculating k-nearest neighbors, it's necessary to filter out infrequent words after getting concatenate embeddings.
 
     simplify.py scans the words in concatenated_org, aiming at filters out the unstable words whose frequency are very small.
 
@@ -135,7 +114,32 @@
     Run it:
         python simplify.py -i ../embeddings/concatenated_org -hi ../accmulate_document_fre/2016 -th 250 -fr ../document_frequency/ -th1 25 -o ../embeddings/after_filtering_concatenated/
 
-    13. Open ../codes/k-nearest-graph/Linux/main.cpp
+#getResult
+----
+    In this section, we will get the results for competitive algorithms and our proposed models.
+
+	1. (a) To get the LINE+Init result, ./getResult/get_result.cpp uses many filtering conditions such as document frequency, WordNet, total frequency and so on to get what we want.
+
+	You can compile it through:
+		g++-4.6 ./getResult/get_result.cpp -o ./getResult/get_result
+
+	And run it by:
+		./getResult/get_result -input concatenated_org -dictionary frequency -period 5 -total frequency.txt -threshold 250 -frequency accmulate_document_fre -threshold1 100 -threshold2 25 -mu 2 -output result_250_100_25 
+    
+
+    1. To filter noises further in getting the results, we use ./getResult/filtering.py to remain the valid words that appreas more 250 times in history, and appears more than 100 times before the previous year and appears more than 50 times in the interval years. 
+
+    Run it:
+        python filtering.py -hi ./accmulate_document_fre/2016 -th 250 -fr ./accmulate_document_fre/ -th1 100 -th2 50 -o ./filtering_250_100_50/
+
+    Where   -hi represents the historical document frequency;
+            -th represents the threshold; 
+            -fr represents the accumulated document frequency's diretory;
+            -th1 represents threshold1; 
+            -th2 represents threshold2; 
+            -o represents output directory.
+
+    2. Open ../codes/k-nearest-graph/Linux/main.cpp
 
     main.cpp and LargeVis.cpp circulates the k-nearest graph of the input embeddings.
 
